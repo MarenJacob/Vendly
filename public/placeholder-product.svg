@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+  <rect width="800" height="1000" fill="#ecebe6"/>
+  <g fill="#c9c7bd">
+    <path d="M300 420h200v160H300z" opacity="0"/>
+    <circle cx="400" cy="440" r="70"/>
+    <path d="M240 700c0-100 80-160 160-160s160 60 160 160v40H240z"/>
+  </g>
+  <text x="400" y="820" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#9c9a90">
+    Image coming soon
+  </text>
+</svg>

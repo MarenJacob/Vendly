@@ -1,0 +1,3 @@
+import { NextResponse } from 'next/server'; import { prisma } from '@/lib/prisma'; import { getAdminSession } from '@/lib/admin-auth';
+export async function GET(){if(!await getAdminSession())return NextResponse.json({error:'Unauthorized'},{status:401});return NextResponse.json({messages:await prisma.message.findMany({include:{product:true},orderBy:{createdAt:'desc'}})});}
+export async function DELETE(req:Request){if(!await getAdminSession())return NextResponse.json({error:'Unauthorized'},{status:401});try{const {id}=await req.json();await prisma.message.delete({where:{id:String(id)}});return NextResponse.json({ok:true});}catch{return NextResponse.json({error:'Could not delete message.'},{status:400});}}
