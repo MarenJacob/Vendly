@@ -1,4 +1,4 @@
-export type Product = { id:string; slug:string; name:string; category:string; price:number; oldPrice?:number; image:string; video?:string; badge?:string; description:string; sizes?:string[]; stock?:number };
+export type Product = { id:string; slug:string; name:string; category:string; price:number; oldPrice?:number; image:string; video?:string; badge?:string; description:string; sizes?:string[]; stock?:number; isPreorder?:boolean; preorderNote?:string };
 // NOTE: `products` below is DEMO DATA ONLY. It is used solely as a local
 // fallback by /api/orders when no DATABASE_URL is configured, so the app
 // still runs for local preview without a database. Every customer-facing

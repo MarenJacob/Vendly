@@ -19,17 +19,18 @@ export async function POST(request:Request){const ip=request.headers.get('x-forw
       const dbProducts=await prisma.product.findMany({where:{id:{in:ids}}});
       const byId=new Map(dbProducts.map(p=>[p.id,p]));
       if(dbProducts.length!==ids.length) return NextResponse.json({error:'One or more products are no longer available.'},{status:409});
-      const normalized=items.map((item:{id:string;quantity:number})=>{const product=byId.get(item.id)!;const quantity=Math.floor(Number(item.quantity));if(product.stock<quantity) throw new Error(`${product.name} has insufficient stock.`);return {product,quantity};});
+      const normalized=items.map((item:{id:string;quantity:number})=>{const product=byId.get(item.id)!;const quantity=Math.floor(Number(item.quantity));if(!product.isPreorder&&product.stock<quantity) throw new Error(`${product.name} has insufficient stock.`);return {product,quantity};});
       const total=normalized.reduce((sum,row)=>sum+Number(row.product.price)*row.quantity,0);
       const orderReference=reference();
       const customerUser=await getCustomer();
       const order=await prisma.$transaction(async tx=>{
         for(const {product,quantity} of normalized){
+          if(product.isPreorder) continue;
           const changed=await tx.product.updateMany({where:{id:product.id,stock:{gte:quantity}},data:{stock:{decrement:quantity}}});
           if(changed.count!==1) throw new Error(`${product.name} has insufficient stock.`);
         }
         const created=await tx.order.create({data:{reference:orderReference,total,phone:String(customer.phone).trim(),email:String(customer.email).trim().toLowerCase(),address:String(customer.address).trim(),userId:customerUser?.id ?? undefined,items:{create:normalized.map(({product,quantity})=>({productId:product.id,quantity,price:product.price}))}}});
-        for(const {product,quantity} of normalized) await tx.inventoryAdjustment.create({data:{productId:product.id,orderId:created.id,quantity:-quantity,reason:'Customer order'}});
+        for(const {product,quantity} of normalized){ if(product.isPreorder) continue; await tx.inventoryAdjustment.create({data:{productId:product.id,orderId:created.id,quantity:-quantity,reason:'Customer order'}}); }
         return created;
       });
       return NextResponse.json({reference:order.reference,orderId:order.id,total},{status:201});

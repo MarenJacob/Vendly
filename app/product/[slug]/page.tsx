@@ -31,6 +31,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <span className="text-xl font-semibold">{formatNaira(p.price)}</span>
             {p.oldPrice && <span className="text-sm text-black/30 line-through">{formatNaira(p.oldPrice)}</span>}
           </div>
+          {p.isPreorder ? (
+            <div className="mt-4 flex items-start gap-2 rounded-2xl bg-black px-4 py-3 text-xs text-white">
+              <span className="font-bold uppercase tracking-[.1em]">Preorder</span>
+              <span className="text-white/70">{p.preorderNote || 'This item ships once it arrives in stock.'}</span>
+            </div>
+          ) : (p.stock ?? 1) <= 0 ? (
+            <div className="mt-4 rounded-2xl bg-black/5 px-4 py-3 text-xs font-semibold text-black/50">Currently out of stock</div>
+          ) : null}
           <p className="mt-6 text-sm leading-7 text-black/55">{p.description}</p>
           {p.sizes && (
             <div className="mt-8">
@@ -41,7 +49,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           )}
           <div className="mt-8">
-            <AddToCart productId={p.id} />
+            <AddToCart productId={p.id} isPreorder={p.isPreorder} outOfStock={!p.isPreorder && (p.stock ?? 1) <= 0} />
             <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Vendly, I'm interested in ${p.name}. Is it available?`)}`} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-black/15 py-4 text-sm font-bold"><MessageCircle size={17} /> Message Vendly</a>
           </div>
           <div className="mt-9 grid gap-3 border-t border-black/10 pt-6 text-xs text-black/55">

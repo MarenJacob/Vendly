@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
@@ -51,6 +51,8 @@ model Product {
   price                Decimal                @db.Decimal(12, 2)
   oldPrice             Decimal?               @db.Decimal(12, 2)
   stock                Int                    @default(0)
+  isPreorder           Boolean                @default(false)
+  preorderNote         String?
   featured             Boolean                @default(false)
   categoryId           String
   category             Category               @relation(fields: [categoryId], references: [id])

@@ -11,6 +11,8 @@ type ProductWithRelations = {
   price: unknown;
   oldPrice: unknown;
   stock: number;
+  isPreorder: boolean;
+  preorderNote: string | null;
   category: { name: string };
   images: { url: string }[];
   videos: { url: string }[];
@@ -28,6 +30,8 @@ function mapProduct(row: ProductWithRelations): Product {
     video: row.videos?.[0]?.url || undefined,
     description: row.description,
     stock: row.stock,
+    isPreorder: row.isPreorder,
+    preorderNote: row.preorderNote ?? undefined,
   };
 }
 
