@@ -1,16 +1,17 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { formatNaira } from '@/lib/products';
 import { useCart } from '@/components/CartProvider';
 import { useCatalog } from '@/components/useCatalog';
 
 export default function Cart() {
   const { items, add, remove, clear } = useCart();
-  const { products, loading } = useCatalog();
+  const { products, loading, error } = useCatalog();
   const rows = items.map((i) => ({ item: i, product: products.find((p) => p.id === i.id) })).filter((x) => x.product);
   const total = rows.reduce((s, x) => s + x.product!.price * x.item.quantity, 0);
+  const loadFailed = !!error && items.length > 0 && !rows.length;
 
   if (loading) {
     return <div className="container py-16"><div className="skeleton h-10 w-52" /></div>;
@@ -25,7 +26,13 @@ export default function Cart() {
         </div>
         {rows.length > 0 && <button onClick={clear} className="hidden items-center gap-2 text-xs font-bold uppercase tracking-wider text-black/45 md:flex"><Trash2 size={14} /> Clear</button>}
       </div>
-      {!rows.length ? (
+      {loadFailed ? (
+        <div className="py-24 text-center">
+          <AlertTriangle className="mx-auto text-black/40" size={35} />
+          <p className="mt-5 text-black/50">Couldn&apos;t load your cart items right now.</p>
+          <button onClick={() => location.reload()} className="mt-7 inline-flex rounded-full bg-black px-6 py-3 text-sm font-bold text-white">Retry</button>
+        </div>
+      ) : !rows.length ? (
         <div className="py-24 text-center">
           <ShoppingBag className="mx-auto" size={35} />
           <p className="mt-5 text-black/50">Your cart is empty.</p>
@@ -36,7 +43,7 @@ export default function Cart() {
           <div className="divide-y divide-black/10">
             {rows.map(({ item, product: p }) => (
               <div key={p!.id} className="flex gap-4 py-5">
-                <div className="relative h-28 w-24 shrink-0 overflow-hidden bg-[#eee]">
+                <div className="relative h-28 w-24 shrink-0 overflow-hidden bg-[#F7F8FA]">
                   <Image src={p!.image} alt={p!.name} fill sizes="96px" className="object-cover" />
                 </div>
                 <div className="flex flex-1 justify-between gap-4">

@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Check, LockKeyhole, ShoppingBag } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowRight, Check, LockKeyhole, ShoppingBag } from 'lucide-react';
 import { FormEvent, useMemo, useState } from 'react';
 import { formatNaira } from '@/lib/products';
 import { useCart } from '@/components/CartProvider';
@@ -8,7 +8,7 @@ import { useCatalog } from '@/components/useCatalog';
 
 export default function Checkout() {
   const { items, clear } = useCart();
-  const { products, loading: catalogLoading } = useCatalog();
+  const { products, loading: catalogLoading, error: catalogError } = useCatalog();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [reference, setReference] = useState('');
@@ -45,6 +45,19 @@ export default function Checkout() {
 
   if (catalogLoading) {
     return <div className="container py-16"><div className="skeleton h-10 w-52" /></div>;
+  }
+
+  if (catalogError && items.length > 0 && !rows.length) {
+    return (
+      <main className="container grid min-h-[65vh] place-items-center py-20 text-center">
+        <div>
+          <AlertTriangle className="mx-auto h-9 w-9" />
+          <h1 className="mt-5 text-3xl font-semibold">Couldn&apos;t load your cart.</h1>
+          <p className="mt-2 text-sm text-slate-500">We had trouble reaching the store just now.</p>
+          <button onClick={() => location.reload()} className="btn-primary mt-7">Retry</button>
+        </div>
+      </main>
+    );
   }
 
   if (!rows.length) {

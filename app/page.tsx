@@ -15,7 +15,7 @@ export default async function Home() {
   return (
     <>
       <section className="container pt-8 md:pt-12">
-        <div className="relative min-h-[620px] overflow-hidden bg-[#ddd] md:min-h-[720px]">
+        <div className="relative min-h-[620px] overflow-hidden bg-[#F7F8FA] md:min-h-[720px]">
           {hero && (
             <Image src={hero.image} alt="Vendly fashion collection" fill priority className="object-cover" />
           )}
@@ -46,7 +46,7 @@ export default async function Home() {
           </div>
         )}
       </section>
-      <section className="bg-[#111] text-white">
+      <section className="bg-[#061426] text-white">
         <div className="container grid gap-14 py-24 md:grid-cols-2 md:items-end">
           <div>
             <p className="eyebrow text-white/45">The Vendly difference</p>
