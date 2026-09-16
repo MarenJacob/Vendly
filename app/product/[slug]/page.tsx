@@ -6,6 +6,7 @@ import { formatNaira } from '@/lib/products';
 import AddToCart from '@/components/AddToCart';
 import ProductGallery from '@/components/ProductGallery';
 import WishlistButton from '@/components/WishlistButton';
+import TrackProductView from '@/components/TrackProductView';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +17,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const p = product;
   return (
     <div className="container py-8 md:py-12">
+      <TrackProductView product={p} />
       <Link href="/shop" className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.14em] text-black/40"><ArrowLeft size={14} /> Back to shop</Link>
       <div className="mt-8 grid gap-10 md:grid-cols-[1.1fr_.9fr] lg:gap-16">
         <ProductGallery product={p} />

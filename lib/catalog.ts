@@ -25,6 +25,8 @@ type ProductWithRelations = {
   stock: number;
   isPreorder: boolean;
   preorderNote: string | null;
+  featured: boolean;
+  createdAt: Date;
   category: { name: string };
   images: { url: string }[];
   videos: { url: string }[];
@@ -44,6 +46,8 @@ function mapProduct(row: ProductWithRelations): Product {
     stock: row.stock,
     isPreorder: row.isPreorder,
     preorderNote: row.preorderNote ?? undefined,
+    featured: row.featured,
+    createdAt: row.createdAt.toISOString(),
   };
 }
 

@@ -24,15 +24,18 @@ enum OrderStatus {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  name         String?
-  email        String    @unique
-  phone        String?
-  passwordHash String?
-  role         Role      @default(CUSTOMER)
-  orders       Order[]
-  messages     Message[]
-  createdAt    DateTime  @default(now())
+  id              String    @id @default(cuid())
+  name            String?
+  email           String    @unique
+  phone           String?
+  passwordHash    String?
+  role            Role      @default(CUSTOMER)
+  emailVerifiedAt DateTime?
+  verifyToken     String?   @unique
+  verifyExpiresAt DateTime?
+  orders          Order[]
+  messages        Message[]
+  createdAt       DateTime  @default(now())
 }
 
 model Category {

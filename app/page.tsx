@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, Check } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
+import RecentlyViewed from '@/components/RecentlyViewed';
 import { getAllProducts } from '@/lib/catalog';
 
 export const dynamic = 'force-dynamic';
@@ -24,10 +25,11 @@ export default async function Home() {
             <p className="eyebrow">Curated for everyday confidence</p>
             <h1 className="display mt-5 max-w-4xl">Shop products.<br />See them closer.</h1>
             <p className="mt-7 max-w-md text-sm leading-6 text-white/75">Discover a considered collection with clear product details, optional video previews and direct access to Vendly support.</p>
-            <Link href="/shop" className="mt-8 inline-flex items-center gap-3 rounded-full bg-white px-6 py-3 text-sm font-bold text-black">Explore the collection <ArrowUpRight size={17} /></Link>
+            <Link href="/shop" className="btn-gradient mt-8 inline-flex px-7 py-3.5 text-[13px]">Explore the collection <ArrowUpRight size={17} /></Link>
           </div>
         </div>
       </section>
+      <RecentlyViewed />
       <section className="container py-24">
         <div className="flex items-end justify-between gap-6">
           <div>

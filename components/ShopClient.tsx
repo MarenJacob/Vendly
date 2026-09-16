@@ -33,7 +33,7 @@ export default function ShopClient({ products, categories }: { products: Product
         <p className="mt-5 max-w-xl text-sm leading-7 text-black/50">Explore the catalogue. Products with available video previews are marked directly on their listing.</p>
       </div>
 
-      <div className="sticky top-[72px] z-40 mt-10 border-y border-black/10 bg-[#ffffff]/95 py-3 backdrop-blur-xl">
+      <div className="sticky top-[68px] z-40 mt-10 border-y border-black/10 bg-[#ffffff]/95 py-3 backdrop-blur-xl">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <label className="relative flex-1">
             <Search size={16} className="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 text-black/40" />
