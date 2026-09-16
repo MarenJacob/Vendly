@@ -11,7 +11,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
   const pathname = usePathname();
   const active = pathname === href;
   return (
-    <Link href={href} className="relative py-2 text-[13px] font-semibold text-white/85 transition hover:text-white">
+    <Link href={href} className="relative py-2 text-[13px] font-semibold text-[rgba(255,255,255,.88)] transition hover:text-white">
       <span className={active ? 'text-white' : ''}>{children}</span>
       {active && <span className="absolute -bottom-[1px] left-0 h-[2px] w-full brand-gradient-bg rounded-full" />}
     </Link>
@@ -38,7 +38,7 @@ export default function Header() {
   }, []);
 
   return <>
-    <header className="sticky top-0 z-50 bg-[#061426]">
+    <header className="on-navy sticky top-0 z-50 bg-[#061426]">
       <div className="container flex h-[68px] items-center justify-between">
         <div className="flex items-center gap-9">
           <Link href="/" className="flex shrink-0 items-center gap-2.5">
@@ -48,7 +48,7 @@ export default function Header() {
           <nav className="hidden items-center gap-7 md:flex">
             <NavLink href="/shop">Shop</NavLink>
             <div ref={catRef} className="relative">
-              <button onClick={() => setCatOpen(v => !v)} className="flex items-center gap-1 py-2 text-[13px] font-semibold text-white/85 transition hover:text-white">
+              <button onClick={() => setCatOpen(v => !v)} className="flex items-center gap-1 py-2 text-[13px] font-semibold text-[rgba(255,255,255,.88)] transition hover:text-white">
                 Categories <ChevronDown size={14} className={`transition-transform ${catOpen ? 'rotate-180' : ''}`} />
               </button>
               {catOpen && (
@@ -66,22 +66,22 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => setSearchOpen(true)} aria-label="Search Vendly" className="grid h-10 w-10 place-items-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-white"><Search size={18} /></button>
-          <Link href="/account" aria-label="Account" className="hidden h-10 w-10 place-items-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-white sm:grid"><UserRound size={18} /></Link>
-          <Link href="/wishlist" aria-label="Wishlist" className="relative grid h-10 w-10 place-items-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-white"><Heart size={18} />{ids.length > 0 && <span className="count-dot">{ids.length > 9 ? '9+' : ids.length}</span>}</Link>
-          <Link href="/cart" aria-label="Cart" className="relative grid h-10 w-10 place-items-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-white"><ShoppingBag size={18} />{count > 0 && <span className="count-dot">{count > 9 ? '9+' : count}</span>}</Link>
-          <button onClick={() => setOpen(!open)} className="grid h-10 w-10 place-items-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-white md:hidden" aria-label="Open menu">{open ? <X size={19} /> : <Menu size={19} />}</button>
+          <button onClick={() => setSearchOpen(true)} aria-label="Search Vendly" className="grid h-10 w-10 place-items-center rounded-full text-[rgba(255,255,255,.88)] transition hover:bg-[rgba(255,255,255,.12)] hover:text-white"><Search size={18} /></button>
+          <Link href="/account" aria-label="Account" className="hidden h-10 w-10 place-items-center rounded-full text-[rgba(255,255,255,.88)] transition hover:bg-[rgba(255,255,255,.12)] hover:text-white sm:grid"><UserRound size={18} /></Link>
+          <Link href="/wishlist" aria-label="Wishlist" className="relative grid h-10 w-10 place-items-center rounded-full text-[rgba(255,255,255,.88)] transition hover:bg-[rgba(255,255,255,.12)] hover:text-white"><Heart size={18} />{ids.length > 0 && <span className="count-dot">{ids.length > 9 ? '9+' : ids.length}</span>}</Link>
+          <Link href="/cart" aria-label="Cart" className="relative grid h-10 w-10 place-items-center rounded-full text-[rgba(255,255,255,.88)] transition hover:bg-[rgba(255,255,255,.12)] hover:text-white"><ShoppingBag size={18} />{count > 0 && <span className="count-dot">{count > 9 ? '9+' : count}</span>}</Link>
+          <button onClick={() => setOpen(!open)} className="grid h-10 w-10 place-items-center rounded-full text-[rgba(255,255,255,.88)] transition hover:bg-[rgba(255,255,255,.12)] hover:text-white md:hidden" aria-label="Open menu">{open ? <X size={19} /> : <Menu size={19} />}</button>
         </div>
       </div>
       {open && (
-        <nav className="border-t border-white/10 bg-[#061426] px-4 py-6 md:hidden">
+        <nav className="on-navy border-t border-[rgba(255,255,255,.12)] bg-[#061426] px-4 py-6 md:hidden">
           <div className="grid gap-1 text-[19px] font-semibold tracking-tight text-white">
-            <Link onClick={() => setOpen(false)} className="rounded-xl px-2 py-2.5 hover:bg-white/5" href="/shop">Shop</Link>
-            <Link onClick={() => setOpen(false)} className="rounded-xl px-2 py-2.5 hover:bg-white/5" href="/track">Track order</Link>
-            <Link onClick={() => setOpen(false)} className="rounded-xl px-2 py-2.5 hover:bg-white/5" href="/account">Account</Link>
-            <p className="mt-4 px-2 text-[11px] font-bold uppercase tracking-[.14em] text-white/35">Categories</p>
-            {categories.map(c => <Link key={c} onClick={() => setOpen(false)} className="rounded-xl px-2 py-2.5 text-white/85 hover:bg-white/5" href={`/category/${encodeURIComponent(c)}`}>{c}</Link>)}
-            <Link onClick={() => setOpen(false)} className="mt-3 flex items-center justify-between border-t border-white/10 px-2 pt-5 text-base text-white/85" href="/contact">Customer service <ArrowUpRight size={17} /></Link>
+            <Link onClick={() => setOpen(false)} className="rounded-xl px-2 py-2.5 hover:bg-[rgba(255,255,255,.06)]" href="/shop">Shop</Link>
+            <Link onClick={() => setOpen(false)} className="rounded-xl px-2 py-2.5 hover:bg-[rgba(255,255,255,.06)]" href="/track">Track order</Link>
+            <Link onClick={() => setOpen(false)} className="rounded-xl px-2 py-2.5 hover:bg-[rgba(255,255,255,.06)]" href="/account">Account</Link>
+            <p className="mt-4 px-2 text-[11px] font-bold uppercase tracking-[.14em] text-[rgba(255,255,255,.35)]">Categories</p>
+            {categories.map(c => <Link key={c} onClick={() => setOpen(false)} className="rounded-xl px-2 py-2.5 text-[rgba(255,255,255,.88)] hover:bg-[rgba(255,255,255,.06)]" href={`/category/${encodeURIComponent(c)}`}>{c}</Link>)}
+            <Link onClick={() => setOpen(false)} className="mt-3 flex items-center justify-between border-t border-[rgba(255,255,255,.12)] px-2 pt-5 text-base text-[rgba(255,255,255,.88)]" href="/contact">Customer service <ArrowUpRight size={17} /></Link>
           </div>
         </nav>
       )}
