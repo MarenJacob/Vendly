@@ -16,7 +16,7 @@ export default function RecentlyViewed() {
 
   return (
     <section className="container py-14">
-      <p className="eyebrow text-black/45">Pick up where you left off</p>
+      <p className="eyebrow text-[rgba(0,0,0,0.45)]">Pick up where you left off</p>
       <h2 className="mt-3 text-3xl font-bold tracking-[-.05em] md:text-4xl">Recently viewed.</h2>
       <div className="mt-7 flex gap-4 overflow-x-auto pb-2">
         {items.map(item => (
@@ -25,7 +25,7 @@ export default function RecentlyViewed() {
               <Image src={item.image} alt={item.name} fill sizes="220px" className="object-cover transition duration-500 group-hover:scale-[1.04]" />
             </div>
             <p className="mt-2.5 truncate text-[13px] font-semibold">{item.name}</p>
-            <p className="text-[12px] font-semibold text-black/45">{formatNaira(item.price)}</p>
+            <p className="text-[12px] font-semibold text-[rgba(0,0,0,0.45)]">{formatNaira(item.price)}</p>
           </Link>
         ))}
       </div>

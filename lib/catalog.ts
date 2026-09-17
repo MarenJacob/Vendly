@@ -4,15 +4,16 @@ import type { Product } from './products';
 const PLACEHOLDER_IMAGE = '/placeholder-product.svg';
 
 async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
-  try {
-    return await fn();
-  } catch (error) {
-    // A single retry smooths over transient pooler/connection hiccups
-    // (common on the first request after a cold start) without masking
-    // a genuinely broken connection — it still throws on the second try.
-    await new Promise((r) => setTimeout(r, 300));
-    return await fn();
+  let lastError: unknown;
+  for (const delayMs of [250, 600]) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
   }
+  return await fn().catch((error) => { throw lastError ?? error; });
 }
 
 type ProductWithRelations = {

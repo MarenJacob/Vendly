@@ -12,10 +12,10 @@ export default function Wishlist() {
 
   return (
     <div className="container py-12 md:py-16">
-      <Link href="/shop" className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.14em] text-black/40"><ArrowLeft size={14} /> Continue shopping</Link>
+      <Link href="/shop" className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.14em] text-[rgba(0,0,0,0.4)]"><ArrowLeft size={14} /> Continue shopping</Link>
       <div className="mt-10 flex items-end justify-between">
         <div>
-          <p className="eyebrow text-black/40">Saved for later</p>
+          <p className="eyebrow text-[rgba(0,0,0,0.4)]">Saved for later</p>
           <h1 className="mt-3 text-5xl font-bold tracking-[-.07em] md:text-7xl">Wishlist.</h1>
         </div>
         <Heart className="mb-2 hidden md:block" size={30} />
@@ -27,10 +27,10 @@ export default function Wishlist() {
           {saved.map((p) => <ProductCard key={p.id} product={p} />)}
         </div>
       ) : (
-        <div className="mt-12 rounded-3xl border border-dashed border-black/15 px-6 py-24 text-center">
-          <Heart className="mx-auto text-black/30" size={32} />
+        <div className="mt-12 rounded-3xl border border-dashed border-[rgba(0,0,0,0.15)] px-6 py-24 text-center">
+          <Heart className="mx-auto text-[rgba(0,0,0,0.3)]" size={32} />
           <h2 className="mt-5 text-xl font-bold">Your wishlist is waiting.</h2>
-          <p className="mt-2 text-sm text-black/45">Save pieces you love and come back to them anytime.</p>
+          <p className="mt-2 text-sm text-[rgba(0,0,0,0.45)]">Save pieces you love and come back to them anytime.</p>
           <Link href="/shop" className="mt-7 inline-flex rounded-full bg-black px-6 py-3 text-sm font-bold text-white">Discover products</Link>
         </div>
       )}

@@ -28,23 +28,23 @@ export default function ShopClient({ products, categories }: { products: Product
   return (
     <div className="container py-8 md:py-16">
       <div className="max-w-3xl">
-        <p className="eyebrow text-black/45">Category listing</p>
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><h1 className="mt-3 text-5xl font-bold tracking-[-.06em] md:text-7xl">Shop all.</h1><div className="hidden rounded-full border border-black/10 bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-[.12em] text-black/45 sm:block">Curated in Nigeria · 2026</div></div>
-        <p className="mt-5 max-w-xl text-sm leading-7 text-black/50">Explore the catalogue. Products with available video previews are marked directly on their listing.</p>
+        <p className="eyebrow text-[rgba(0,0,0,0.45)]">Category listing</p>
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><h1 className="mt-3 text-5xl font-bold tracking-[-.06em] md:text-7xl">Shop all.</h1><div className="hidden rounded-full border border-[rgba(0,0,0,0.1)] bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-[.12em] text-[rgba(0,0,0,0.45)] sm:block">Curated in Nigeria · 2026</div></div>
+        <p className="mt-5 max-w-xl text-sm leading-7 text-[rgba(0,0,0,0.5)]">Explore the catalogue. Products with available video previews are marked directly on their listing.</p>
       </div>
 
-      <div className="sticky top-[68px] z-40 mt-10 border-y border-black/10 bg-[#ffffff]/95 py-3 backdrop-blur-xl">
+      <div className="sticky top-[68px] z-40 mt-10 border-y border-[rgba(0,0,0,0.1)] bg-[#ffffff]/95 py-3 backdrop-blur-xl">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <label className="relative flex-1">
-            <Search size={16} className="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 text-black/40" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products, categories..." aria-label="Search products" className="w-full border-b border-black/15 bg-transparent py-3 pl-7 pr-8 text-sm outline-none focus:border-black" />
-            {q && <button type="button" onClick={() => setQ('')} aria-label="Clear search" className="absolute right-1 top-1/2 -translate-y-1/2 text-black/45"><X size={16} /></button>}
+            <Search size={16} className="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 text-[rgba(0,0,0,0.4)]" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products, categories..." aria-label="Search products" className="w-full border-b border-[rgba(0,0,0,0.15)] bg-transparent py-3 pl-7 pr-8 text-sm outline-none focus:border-black" />
+            {q && <button type="button" onClick={() => setQ('')} aria-label="Clear search" className="absolute right-1 top-1/2 -translate-y-1/2 text-[rgba(0,0,0,0.45)]"><X size={16} /></button>}
           </label>
           <div className="flex gap-2 overflow-x-auto pb-1 lg:max-w-[55%]">
-            <button onClick={() => setCat('All')} className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-bold ${cat === 'All' ? 'border-black bg-black text-white' : 'border-black/10 bg-white'}`}><SlidersHorizontal className="mr-1 inline h-3.5 w-3.5" />All</button>
-            {categories.filter((c) => c !== 'All').map((c) => <button key={c} onClick={() => setCat(c)} className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-bold ${cat === c ? 'border-black bg-black text-white' : 'border-black/10 bg-white'}`}>{c}</button>)}
+            <button onClick={() => setCat('All')} className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-bold ${cat === 'All' ? 'border-black bg-black text-white' : 'border-[rgba(0,0,0,0.1)] bg-white'}`}><SlidersHorizontal className="mr-1 inline h-3.5 w-3.5" />All</button>
+            {categories.filter((c) => c !== 'All').map((c) => <button key={c} onClick={() => setCat(c)} className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-bold ${cat === c ? 'border-black bg-black text-white' : 'border-[rgba(0,0,0,0.1)] bg-white'}`}>{c}</button>)}
           </div>
-          <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort products" className="w-full border border-black/10 bg-white px-3 py-2.5 text-xs outline-none lg:w-44">
+          <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort products" className="w-full border border-[rgba(0,0,0,0.1)] bg-white px-3 py-2.5 text-xs outline-none lg:w-44">
             <option value="featured">Featured</option>
             <option value="newest">Newest</option>
             <option value="low">Price: Low to high</option>
@@ -53,7 +53,7 @@ export default function ShopClient({ products, categories }: { products: Product
         </div>
       </div>
 
-      <div className="flex items-center justify-between py-7 text-xs text-black/45">
+      <div className="flex items-center justify-between py-7 text-xs text-[rgba(0,0,0,0.45)]">
         <span>{filtered.length} {filtered.length === 1 ? 'product' : 'products'}</span>
         {(q || cat !== 'All') && <button onClick={() => { setQ(''); setCat('All'); }} className="font-bold text-black underline underline-offset-4">Clear filters</button>}
       </div>
@@ -63,9 +63,9 @@ export default function ShopClient({ products, categories }: { products: Product
           {filtered.map((p) => <ProductCard key={p.id} product={p} />)}
         </div>
       ) : (
-        <div className="border border-dashed border-black/15 py-24 text-center">
+        <div className="border border-dashed border-[rgba(0,0,0,0.15)] py-24 text-center">
           <h2 className="text-xl font-bold">{products.length ? 'Nothing matched your search.' : 'No products yet.'}</h2>
-          <p className="mt-2 text-sm text-black/45">{products.length ? 'Try a different product name or category.' : 'Check back soon — new items are on the way.'}</p>
+          <p className="mt-2 text-sm text-[rgba(0,0,0,0.45)]">{products.length ? 'Try a different product name or category.' : 'Check back soon — new items are on the way.'}</p>
         </div>
       )}
     </div>

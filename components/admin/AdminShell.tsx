@@ -30,7 +30,7 @@ export default function AdminShell({children}:{children:React.ReactNode}){
     <div className="lg:pl-72">
       <header className="sticky top-0 z-30 border-b border-black/[.06] bg-[#F7F8FA]/90 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <button onClick={()=>setOpen(true)} className="rounded-xl border border-black/10 bg-white p-2 lg:hidden"><Menu size={19}/></button>
+          <button onClick={()=>setOpen(true)} className="rounded-xl border border-[rgba(0,0,0,0.1)] bg-white p-2 lg:hidden"><Menu size={19}/></button>
           <div className="hidden text-sm text-slate-500 lg:block">Vendly / <span className="text-[#161616]">{path.split('/').filter(Boolean).slice(-1)[0]||'overview'}</span></div>
           <div className="ml-auto flex items-center gap-3"><span className="hidden rounded-full bg-white px-3 py-1.5 text-xs font-medium text-slate-500 sm:block">Admin workspace</span><span className="grid h-9 w-9 place-items-center rounded-full bg-[#FF7200] text-xs font-bold text-white">A</span></div>
         </div>

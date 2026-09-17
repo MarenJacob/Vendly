@@ -52,12 +52,12 @@ export default function Header() {
                 Categories <ChevronDown size={14} className={`transition-transform ${catOpen ? 'rotate-180' : ''}`} />
               </button>
               {catOpen && (
-                <div className="absolute left-0 top-[calc(100%+10px)] w-[420px] rounded-2xl border border-black/5 bg-white p-4 shadow-[0_24px_60px_rgba(6,20,38,.18)]">
+                <div className="absolute left-0 top-[calc(100%+10px)] w-[420px] rounded-2xl border border-[rgba(0,0,0,0.05)] bg-white p-4 shadow-[0_24px_60px_rgba(6,20,38,.18)]">
                   <div className="grid grid-cols-2 gap-1">
                     {categories.map(c => (
                       <Link key={c} onClick={() => setCatOpen(false)} href={`/category/${encodeURIComponent(c)}`} className="rounded-xl px-3 py-2.5 text-[13px] font-medium text-[#161616] transition hover:bg-[#F7F8FA]">{c}</Link>
                     ))}
-                    {!categories.length && <p className="col-span-2 px-3 py-2.5 text-[13px] text-black/40">No categories yet.</p>}
+                    {!categories.length && <p className="col-span-2 px-3 py-2.5 text-[13px] text-[rgba(0,0,0,0.4)]">No categories yet.</p>}
                   </div>
                 </div>
               )}
@@ -94,14 +94,14 @@ function SearchOverlay({ close, categories }: { close: () => void; categories: s
   const [q, setQ] = useState('');
   return (
     <div className="fixed inset-0 z-[100] bg-[#061426]/70 p-3 backdrop-blur-md" onMouseDown={close}>
-      <div onMouseDown={e => e.stopPropagation()} className="mx-auto mt-3 max-w-2xl overflow-hidden rounded-3xl border border-black/10 bg-white shadow-2xl md:mt-12">
-        <div className="flex items-center gap-3 border-b border-black/10 p-5">
-          <Search className="text-black/35" size={20} />
+      <div onMouseDown={e => e.stopPropagation()} className="mx-auto mt-3 max-w-2xl overflow-hidden rounded-3xl border border-[rgba(0,0,0,0.1)] bg-white shadow-2xl md:mt-12">
+        <div className="flex items-center gap-3 border-b border-[rgba(0,0,0,0.1)] p-5">
+          <Search className="text-[rgba(0,0,0,0.35)]" size={20} />
           <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="What are you looking for?" className="flex-1 bg-transparent text-lg outline-none" />
-          <button onClick={close} className="rounded-full bg-black/5 p-2"><X size={17} /></button>
+          <button onClick={close} className="rounded-full bg-[rgba(0,0,0,0.05)] p-2"><X size={17} /></button>
         </div>
         <div className="p-5">
-          <p className="eyebrow text-black/35">Popular categories</p>
+          <p className="eyebrow text-[rgba(0,0,0,0.35)]">Popular categories</p>
           <div className="mt-4 flex flex-wrap gap-2">{categories.map(x => <Link onClick={close} key={x} href={`/category/${encodeURIComponent(x)}`} className="chip">{x}</Link>)}</div>
           <Link onClick={close} href={q.trim() ? `/shop?q=${encodeURIComponent(q)}` : '/shop'} className="mt-6 flex items-center justify-between rounded-2xl bg-[#FF7200] px-5 py-4 text-sm font-bold text-white">{q.trim() ? `Search for "${q}"` : 'Browse everything'}<ArrowUpRight size={17} /></Link>
         </div>

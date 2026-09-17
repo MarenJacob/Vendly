@@ -1,61 +1,84 @@
 'use client';
-import {useState} from 'react';
-import {Check, LoaderCircle, UploadCloud} from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { LoaderCircle, UploadCloud } from 'lucide-react';
 
-export default function MediaUploader({kind,onUploaded}:{kind:'image'|'video';onUploaded:(url:string)=>void}){
-  const [status,setStatus]=useState('');
-  const [error,setError]=useState('');
-  const [busy,setBusy]=useState(false);
-  const [lastResponse,setLastResponse]=useState('');
-
-  async function upload(file:File){
-    setError(''); setStatus(''); setLastResponse(''); setBusy(true);
-    try{
-      if(kind==='image'&&!file.type.startsWith('image/')) throw new Error(`That file looks like "${file.type||'unknown type'}", not an image.`);
-      if(kind==='video'&&!file.type.startsWith('video/')) throw new Error(`That file looks like "${file.type||'unknown type'}", not a video.`);
-      const maxSize=kind==='image'?8*1024*1024:80*1024*1024;
-      if(file.size>maxSize) throw new Error(`This file is ${(file.size/1024/1024).toFixed(1)}MB — the limit is ${maxSize/1024/1024}MB.`);
-
-      setStatus('Requesting upload permission…');
-      const sig=await fetch('/api/admin/media/sign',{method:'POST'});
-      const sigText=await sig.text();
-      let data:any;
-      try{ data=JSON.parse(sigText); } catch { throw new Error(`Signing step returned something unexpected: ${sigText.slice(0,200)}`); }
-      if(!sig.ok) throw new Error(data.error||`Signing step failed (HTTP ${sig.status}).`);
-      if(!data.cloudName||!data.apiKey||!data.signature) throw new Error('Signing step succeeded but returned incomplete data — check Cloudinary env vars are all set.');
-
-      setStatus(`Uploading to Cloudinary (cloud: ${data.cloudName})…`);
-      const body=new FormData();
-      body.append('file',file);
-      body.append('api_key',data.apiKey);
-      body.append('timestamp',data.timestamp);
-      body.append('folder',data.folder);
-      body.append('signature',data.signature);
-      const r=await fetch(`https://api.cloudinary.com/v1_1/${data.cloudName}/auto/upload`,{method:'POST',body});
-      const outText=await r.text();
-      let out:any;
-      try{ out=JSON.parse(outText); } catch { throw new Error(`Cloudinary returned something unexpected (HTTP ${r.status}): ${outText.slice(0,300)}`); }
-      setLastResponse(JSON.stringify(out,null,2).slice(0,600));
-      if(!r.ok) throw new Error(out.error?.message||`Cloudinary rejected the upload (HTTP ${r.status}).`);
-      if(!out.secure_url) throw new Error('Cloudinary accepted the file but did not return a URL — see raw response below.');
-
-      setStatus('Uploaded.');
-      onUploaded(out.secure_url);
-    }catch(e){
-      setError(e instanceof Error?e.message:'Upload failed for an unknown reason.');
-      setStatus('');
-    }finally{
-      setBusy(false);
-    }
+declare global {
+  interface Window {
+    cloudinary?: {
+      createUploadWidget: (options: Record<string, unknown>, callback: (error: unknown, result: any) => void) => { open: () => void };
+    };
   }
+}
 
-  return <div>
-    <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-semibold shadow-sm hover:border-slate-400">
-      <input className="sr-only" type="file" accept={kind==='image'?'image/*':'video/*'} disabled={busy} onChange={e=>{const f=e.target.files?.[0]; if(f) upload(f); e.target.value='';}}/>
-      {busy?<LoaderCircle className="animate-spin" size={15}/>:<UploadCloud size={15}/>} {busy?'Working…':`Upload ${kind}`}
-    </label>
-    {status && <p className="mt-2 text-xs font-medium text-slate-500">{status}</p>}
-    {error && <p role="alert" className="mt-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">{error}</p>}
-    {lastResponse && <details className="mt-2"><summary className="cursor-pointer text-[11px] font-semibold text-slate-400">Show raw Cloudinary response</summary><pre className="mt-1 max-h-40 overflow-auto rounded-lg bg-slate-950 p-2 text-[10px] text-slate-200">{lastResponse}</pre></details>}
-  </div>
+let scriptPromise: Promise<void> | null = null;
+function loadWidgetScript(): Promise<void> {
+  if (typeof window === 'undefined') return Promise.resolve();
+  if (window.cloudinary) return Promise.resolve();
+  if (scriptPromise) return scriptPromise;
+  scriptPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://upload-widget.cloudinary.com/global/all.js';
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Could not load the Cloudinary upload widget script.'));
+    document.body.appendChild(script);
+  });
+  return scriptPromise;
+}
+
+export default function MediaUploader({ kind, onUploaded }: { kind: 'image' | 'video'; onUploaded: (url: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const widgetRef = useRef<{ open: () => void } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadWidgetScript()
+      .then(async () => {
+        if (cancelled || !window.cloudinary) return;
+        const sigRes = await fetch('/api/admin/media/sign', { method: 'POST' });
+        const sigData = await sigRes.json();
+        if (!sigRes.ok) { setError(sigData.error || 'Cloudinary is not configured.'); return; }
+        widgetRef.current = window.cloudinary.createUploadWidget(
+          {
+            cloudName: sigData.cloudName,
+            apiKey: sigData.apiKey,
+            uploadSignature: (callback: (sig: string) => void, paramsToSign: Record<string, unknown>) => {
+              fetch('/api/admin/media/sign', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paramsToSign }) })
+                .then(r => r.json())
+                .then(d => callback(d.signature))
+                .catch(() => setError('Could not sign the upload. Please try again.'));
+            },
+            folder: 'vendly/products',
+            sources: ['local', 'camera', 'url'],
+            multiple: false,
+            resourceType: kind === 'video' ? 'video' : 'image',
+            clientAllowedFormats: kind === 'video' ? ['mp4', 'mov', 'webm', 'm4v'] : ['png', 'jpg', 'jpeg', 'webp', 'gif'],
+            maxFileSize: kind === 'video' ? 80 * 1024 * 1024 : 8 * 1024 * 1024,
+            styles: { palette: { tabIcon: '#FF7200', link: '#FF7200' } },
+          },
+          (widgetError: unknown, result: any) => {
+            if (widgetError) { setError('Upload failed. Please try again.'); setBusy(false); return; }
+            if (result?.event === 'success') { onUploaded(result.info.secure_url); setBusy(false); }
+            if (result?.event === 'close') setBusy(false);
+          }
+        );
+      })
+      .catch(e => setError(e instanceof Error ? e.message : 'Could not load the uploader.'));
+    return () => { cancelled = true; };
+  }, [kind, onUploaded]);
+
+  return (
+    <div>
+      <button
+        type="button"
+        disabled={!widgetRef.current}
+        onClick={() => { setError(''); setBusy(true); widgetRef.current?.open(); }}
+        className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-semibold shadow-sm hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {busy ? <LoaderCircle className="animate-spin" size={15} /> : <UploadCloud size={15} />} {busy ? 'Working…' : `Upload ${kind}`}
+      </button>
+      {error && <p role="alert" className="mt-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">{error}</p>}
+    </div>
+  );
 }

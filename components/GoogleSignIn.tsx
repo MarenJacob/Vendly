@@ -43,7 +43,7 @@ export default function GoogleSignIn({ onSuccess }: { onSuccess: () => void }) {
   if (!clientId) return null;
   return (
     <div className="mt-4">
-      <div className="mb-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-black/35"><span className="h-px flex-1 bg-black/10" />or<span className="h-px flex-1 bg-black/10" /></div>
+      <div className="mb-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-[rgba(0,0,0,0.35)]"><span className="h-px flex-1 bg-[rgba(0,0,0,0.1)]" />or<span className="h-px flex-1 bg-[rgba(0,0,0,0.1)]" /></div>
       <div ref={ref} className="flex justify-center" />
     </div>
   );
