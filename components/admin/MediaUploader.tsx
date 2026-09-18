@@ -2,6 +2,9 @@
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { ImageIcon, LoaderCircle, Trash2, UploadCloud, VideoIcon, X } from 'lucide-react';
+import { getSupabaseBrowserClient } from '@/lib/supabase-browser';
+
+const BUCKET = 'product-media';
 
 export default function MediaUploader({ kind, value, onUploaded, onRemove }: { kind: 'image' | 'video'; value?: string; onUploaded: (url: string) => void; onRemove?: () => void }) {
   const [busy, setBusy] = useState(false);
@@ -10,51 +13,49 @@ export default function MediaUploader({ kind, value, onUploaded, onRemove }: { k
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  function uploadImage(file: File) {
+    return new Promise<void>((resolve, reject) => {
+      const body = new FormData();
+      body.append('file', file);
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/admin/media/upload-image');
+      xhr.upload.onprogress = (e) => { if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100)); };
+      xhr.onload = () => {
+        try {
+          const out = JSON.parse(xhr.responseText);
+          if (xhr.status >= 200 && xhr.status < 300 && out.url) { onUploaded(out.url); resolve(); }
+          else reject(new Error(out.error || `Upload failed (HTTP ${xhr.status}).`));
+        } catch { reject(new Error('Server returned an unexpected response.')); }
+      };
+      xhr.onerror = () => reject(new Error('Network error while uploading — check your connection and try again.'));
+      xhr.send(body);
+    });
+  }
+
+  async function uploadVideo(file: File) {
+    const sigRes = await fetch('/api/admin/media/sign-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: file.name }) });
+    const sig = await sigRes.json();
+    if (!sigRes.ok) throw new Error(sig.error || 'Could not prepare the video upload.');
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) throw new Error('Storage is not fully configured (missing public Supabase keys).');
+    setProgress(50); // signed uploads don't report granular progress — show an indeterminate midpoint instead
+    const { error } = await supabase.storage.from(BUCKET).uploadToSignedUrl(sig.path, sig.token, file);
+    if (error) throw new Error(error.message);
+    onUploaded(sig.publicUrl);
+  }
+
   function upload(file: File) {
     setError('');
     setProgress(0);
 
-    if (kind === 'image' && !file.type.startsWith('image/')) { setError(`That's a ${file.type || 'unknown'} file, not an image.`); return; }
-    if (kind === 'video' && !file.type.startsWith('video/')) { setError(`That's a ${file.type || 'unknown'} file, not a video.`); return; }
-    const maxSize = kind === 'image' ? 8 * 1024 * 1024 : 80 * 1024 * 1024;
-    if (file.size > maxSize) { setError(`This file is ${(file.size / 1024 / 1024).toFixed(1)}MB — the limit is ${maxSize / 1024 / 1024}MB.`); return; }
+    if (kind === 'image' && !file.type.startsWith('image/') && file.type !== '') { setError(`That's a ${file.type} file, not an image.`); return; }
+    if (kind === 'video' && !file.type.startsWith('video/') && file.type !== '') { setError(`That's a ${file.type} file, not a video.`); return; }
+    const maxSize = kind === 'image' ? 4.5 * 1024 * 1024 : 80 * 1024 * 1024;
+    if (file.size > maxSize) { setError(`This file is ${(file.size / 1024 / 1024).toFixed(1)}MB — the limit is ${(maxSize / 1024 / 1024).toFixed(0)}MB.`); return; }
 
     setBusy(true);
-
-    fetch('/api/admin/media/sign', { method: 'POST' })
-      .then(async (sigRes) => {
-        const sigData = await sigRes.json();
-        if (!sigRes.ok) throw new Error(sigData.error || 'Could not authorize the upload.');
-        if (!sigData.cloudName || !sigData.apiKey || !sigData.signature) throw new Error('Upload signing returned incomplete data.');
-
-        await new Promise<void>((resolve, reject) => {
-          const body = new FormData();
-          body.append('file', file);
-          body.append('api_key', sigData.apiKey);
-          body.append('timestamp', sigData.timestamp);
-          body.append('folder', sigData.folder);
-          body.append('signature', sigData.signature);
-
-          const xhr = new XMLHttpRequest();
-          xhr.open('POST', `https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`);
-          xhr.upload.onprogress = (e) => { if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100)); };
-          xhr.onload = () => {
-            try {
-              const out = JSON.parse(xhr.responseText);
-              if (xhr.status >= 200 && xhr.status < 300 && out.secure_url) {
-                onUploaded(out.secure_url);
-                resolve();
-              } else {
-                reject(new Error(out?.error?.message || `Cloudinary rejected the upload (HTTP ${xhr.status}).`));
-              }
-            } catch {
-              reject(new Error('Cloudinary returned an unexpected response.'));
-            }
-          };
-          xhr.onerror = () => reject(new Error('Network error while uploading — check your connection and try again.'));
-          xhr.send(body);
-        });
-      })
+    const task = kind === 'image' ? uploadImage(file) : uploadVideo(file);
+    task
       .catch((e) => setError(e instanceof Error ? e.message : 'Upload failed.'))
       .finally(() => { setBusy(false); setProgress(0); });
   }
@@ -108,7 +109,7 @@ export default function MediaUploader({ kind, value, onUploaded, onRemove }: { k
           <>
             <div className="flex items-center gap-1.5 text-slate-400"><Icon size={18} /><UploadCloud size={18} /></div>
             <p className="text-xs font-semibold text-slate-600">Tap to upload {kind}, or drag one here</p>
-            <p className="text-[11px] text-slate-400">{kind === 'image' ? 'Up to 8MB' : 'Up to 80MB'}</p>
+            <p className="text-[11px] text-slate-400">{kind === 'image' ? 'Up to 4.5MB' : 'Up to 80MB'}</p>
           </>
         )}
       </div>
