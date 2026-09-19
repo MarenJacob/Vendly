@@ -1,8 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, Check } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import RecentlyViewed from '@/components/RecentlyViewed';
+import HeroSlideshow from '@/components/HeroSlideshow';
 import { getAllProducts } from '@/lib/catalog';
 
 export const dynamic = 'force-dynamic';
@@ -10,16 +10,14 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
   const products = await getAllProducts();
-  const hero = products[3] ?? products[0];
+  const heroImages = (products.length ? products : []).slice(0, 6).map((p) => p.image);
   const trending = products.slice(0, 8);
 
   return (
     <>
       <section className="container pt-8 md:pt-12">
         <div className="relative min-h-[620px] overflow-hidden bg-[#F7F8FA] md:min-h-[720px]">
-          {hero && (
-            <Image src={hero.image} alt="Vendly fashion collection" fill priority className="object-cover" />
-          )}
+          <HeroSlideshow images={heroImages} />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.7)] via-[rgba(0,0,0,0.1)] to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-7 text-white md:p-14">
             <p className="eyebrow">Curated for everyday confidence</p>
@@ -69,7 +67,7 @@ export default async function Home() {
           <p className="eyebrow text-[rgba(0,0,0,0.45)]">Need a closer look?</p>
           <div className="mt-4 flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <h2 className="max-w-2xl text-4xl font-bold tracking-[-.05em] md:text-6xl">Talk directly to Vendly before you buy.</h2>
-            <a href={whatsapp ? `https://wa.me/${whatsapp}?text=Hello%20Vendly%2C%20I%20have%20a%20question%20about%20a%20product.` : '/contact'} className="inline-flex shrink-0 items-center justify-center rounded-full bg-black px-6 py-3 text-sm font-bold text-white">Message Vendly <ArrowUpRight className="ml-2" size={17} /></a>
+            <a href={whatsapp ? `https://wa.me/${whatsapp}?text=Hello%20Vendly%2C%20I%20have%20a%20question%20about%20a%20product.` : '/contact'} style={{backgroundColor:'#061426',color:'#ffffff'}} className="inline-flex shrink-0 items-center justify-center rounded-full px-6 py-3 text-sm font-bold">Message Vendly <ArrowUpRight className="ml-2" size={17} /></a>
           </div>
         </div>
       </section>

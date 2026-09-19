@@ -79,11 +79,11 @@ export default function MediaUploader({ kind, value, onUploaded, onRemove }: { k
             <video src={value} controls className="h-full w-full object-cover" />
           )}
           <div className="absolute right-2 top-2 flex gap-1.5">
-            <button type="button" onClick={() => inputRef.current?.click()} className="rounded-full bg-white/90 px-2.5 py-1.5 text-[11px] font-semibold shadow hover:bg-white">Replace</button>
-            {onRemove && <button type="button" onClick={onRemove} aria-label="Remove" className="rounded-full bg-white/90 p-1.5 shadow hover:bg-white"><Trash2 size={13} /></button>}
+            <button type="button" onClick={() => inputRef.current?.click()} className="rounded-full bg-[rgba(255,255,255,0.9)] px-2.5 py-1.5 text-[11px] font-semibold shadow hover:bg-white">Replace</button>
+            {onRemove && <button type="button" onClick={onRemove} aria-label="Remove" className="rounded-full bg-[rgba(255,255,255,0.9)] p-1.5 shadow hover:bg-white"><Trash2 size={13} /></button>}
           </div>
         </div>
-        <input ref={inputRef} type="file" className="hidden" accept={kind === 'image' ? 'image/*' : 'video/*'} onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ''; }} />
+        <input ref={inputRef} type="file" className="sr-only" accept={kind === 'image' ? 'image/*' : 'video/*'} onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ''; }} />
         {error && <p role="alert" className="mt-2 flex items-start gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700"><X size={13} className="mt-0.5 shrink-0" />{error}</p>}
       </div>
     );
@@ -98,7 +98,7 @@ export default function MediaUploader({ kind, value, onUploaded, onRemove }: { k
         onDrop={onDrop}
         className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-4 text-center transition ${kind === 'image' ? 'aspect-square' : 'aspect-video'} ${dragOver ? 'border-[#FF7200] bg-[#FFF6EF]' : 'border-slate-200 bg-slate-50 hover:border-slate-300'} ${busy ? 'pointer-events-none opacity-80' : ''}`}
       >
-        <input ref={inputRef} type="file" className="hidden" accept={kind === 'image' ? 'image/*' : 'video/*'} onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ''; }} />
+        <input ref={inputRef} type="file" className="sr-only" accept={kind === 'image' ? 'image/*' : 'video/*'} onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ''; }} />
         {busy ? (
           <>
             <LoaderCircle className="animate-spin text-[#FF7200]" size={22} />

@@ -64,7 +64,7 @@ export default function Cart() {
           <div className="h-fit border border-[rgba(0,0,0,0.1)] p-6 md:sticky md:top-28">
             <div className="flex justify-between text-sm"><span>Total</span><strong>{formatNaira(total)}</strong></div>
             <p className="mt-2 text-xs text-[rgba(0,0,0,0.4)]">Delivery charges are confirmed at checkout.</p>
-            <Link href="/checkout" className="mt-6 flex items-center justify-center gap-2 rounded-full bg-black py-4 text-sm font-bold text-white">Checkout <ArrowRight size={16} /></Link>
+            <Link href="/checkout" style={{backgroundColor:'#061426',color:'#ffffff'}} className="mt-6 flex items-center justify-center gap-2 rounded-full py-4 text-sm font-bold">Checkout <ArrowRight size={16} /></Link>
           </div>
         </div>
       )}

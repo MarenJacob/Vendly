@@ -34,6 +34,7 @@ type ProductWithRelations = {
 };
 
 function mapProduct(row: ProductWithRelations): Product {
+  const images = row.images?.length ? row.images.map((i) => i.url) : [PLACEHOLDER_IMAGE];
   return {
     id: row.id,
     slug: row.slug,
@@ -41,7 +42,8 @@ function mapProduct(row: ProductWithRelations): Product {
     category: row.category?.name ?? 'Uncategorised',
     price: Number(row.price),
     oldPrice: row.oldPrice != null ? Number(row.oldPrice) : undefined,
-    image: row.images?.[0]?.url || PLACEHOLDER_IMAGE,
+    image: images[0],
+    images,
     video: row.videos?.[0]?.url || undefined,
     description: row.description,
     stock: row.stock,
