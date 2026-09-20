@@ -1,5 +1,5 @@
 'use client';
-import Image from 'next/image';
+import Logo from './Logo';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, Search, ShoppingBag, X, Heart, ArrowUpRight, UserRound, ChevronDown, MapPin } from 'lucide-react';
@@ -42,7 +42,7 @@ export default function Header() {
       <div className="container flex h-[68px] items-center justify-between">
         <div className="flex items-center gap-9">
           <Link href="/" className="flex shrink-0 items-center gap-2.5">
-            <Image src="/logo.jpg" alt="Vendly" width={38} height={38} className="h-9 w-9 rounded-full object-cover" priority />
+            <Logo size={38} />
             <span className="hidden text-[21px] font-black tracking-[-.06em] text-white sm:inline">vendly<span className="brand-gradient-text">.</span></span>
           </Link>
           <nav className="hidden items-center gap-7 md:flex">

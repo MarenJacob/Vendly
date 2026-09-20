@@ -1,0 +1,2 @@
+import Header from '@/components/Header'; import Footer from '@/components/Footer'; import {CartProvider} from '@/components/CartProvider'; import {WishlistProvider} from '@/components/WishlistProvider'; import {CustomerProvider} from '@/components/CustomerProvider'; import CookieBanner from '@/components/CookieBanner';
+export default function SiteLayout({children}:{children:React.ReactNode}){return <CustomerProvider><CartProvider><WishlistProvider><Header/><main>{children}</main><Footer/><CookieBanner/></WishlistProvider></CartProvider></CustomerProvider>}

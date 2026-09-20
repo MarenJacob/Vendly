@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { products } from '@/lib/products';
 import { rateLimit } from '@/lib/rate-limit';
 import { getCustomer } from '@/lib/customer-auth';
+import { sendEmail, orderConfirmationEmailHtml } from '@/lib/email';
 
 function reference(){return `VD-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;}
 
@@ -33,9 +34,17 @@ export async function POST(request:Request){const ip=request.headers.get('x-forw
         for(const {product,quantity} of normalized){ if(product.isPreorder) continue; await tx.inventoryAdjustment.create({data:{productId:product.id,orderId:created.id,quantity:-quantity,reason:'Customer order'}}); }
         return created;
       });
+      try {
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+        await sendEmail(
+          customer.email,
+          `Order received — ${order.reference}`,
+          orderConfirmationEmailHtml({ reference: order.reference, total, address: customer.address, phone: customer.phone, items: normalized.map(({product,quantity}) => ({ quantity, price: product.price, product: { name: product.name } })) }, `${appUrl}/track?ref=${order.reference}`)
+        );
+      } catch (e) { console.error('[orders] confirmation email failed:', e); }
+
       return NextResponse.json({reference:order.reference,orderId:order.id,total},{status:201});
     }
-
     const normalized=items.map((item:{id:string;quantity:number})=>{const product=products.find(p=>p.id===item.id);if(!product)throw new Error(`Product ${item.id} was not found.`);return {product,quantity:Math.floor(Number(item.quantity))};});
     const total=normalized.reduce((sum,row)=>sum+row.product.price*row.quantity,0);
     return NextResponse.json({reference:reference(),total,demo:true},{status:201});

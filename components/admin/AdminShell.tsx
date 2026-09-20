@@ -1,5 +1,5 @@
 'use client';
-import Image from 'next/image';
+import Logo from '../Logo';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BarChart3, Boxes, LayoutDashboard, MessageSquare, Package, ShoppingBag, Users, Store, Menu, X, History } from 'lucide-react';
@@ -12,7 +12,7 @@ export default function AdminShell({children}:{children:React.ReactNode}){
     <aside className={`on-navy fixed inset-y-0 left-0 z-50 w-72 bg-[#061426] transition-transform lg:translate-x-0 ${open?'translate-x-0':'-translate-x-full'}`}>
       <div className="flex h-full flex-col p-5">
         <div className="flex items-center justify-between px-2">
-          <Link href="/admin" className="flex items-center gap-2.5"><Image src="/logo.jpg" alt="Vendly" width={30} height={30} className="h-[30px] w-[30px] rounded-full object-cover"/><span className="text-lg font-black tracking-tight text-white">vendly<span className="brand-gradient-text">.</span></span></Link>
+          <Link href="/admin" className="flex items-center gap-2.5"><Logo size={30} /><span className="text-lg font-black tracking-tight text-white">vendly<span className="brand-gradient-text">.</span></span></Link>
           <button onClick={()=>setOpen(false)} className="rounded-lg p-2 text-[rgba(255,255,255,.7)] hover:bg-[rgba(255,255,255,.12)] lg:hidden"><X size={19}/></button>
         </div>
         <div className="mt-8 rounded-2xl bg-[rgba(255,255,255,.06)] p-4 text-white">

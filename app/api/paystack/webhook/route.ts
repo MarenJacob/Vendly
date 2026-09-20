@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendEmail, paymentConfirmedEmailHtml } from '@/lib/email';
 
 export async function POST(request:Request){
   const secret=process.env.PAYSTACK_SECRET_KEY;
@@ -16,7 +17,16 @@ export async function POST(request:Request){
       const order=await prisma.order.findUnique({where:{reference}});
       if(order && order.status!=='PAID'){
         const expected=Math.round(Number(order.total)*100);
-        if(Number(event.data.amount)===expected && event.data.currency==='NGN' && String(event.data.customer?.email||'').toLowerCase()===order.email.toLowerCase()) await prisma.order.update({where:{id:order.id},data:{status:'PAID',paymentReference:reference,paidAt:event.data.paid_at?new Date(event.data.paid_at):new Date()}});
+        if(Number(event.data.amount)===expected && event.data.currency==='NGN' && String(event.data.customer?.email||'').toLowerCase()===order.email.toLowerCase()){
+          await prisma.order.update({where:{id:order.id},data:{status:'PAID',paymentReference:reference,paidAt:event.data.paid_at?new Date(event.data.paid_at):new Date()}});
+          try{
+            const full=await prisma.order.findUnique({where:{id:order.id},include:{items:{include:{product:true}}}});
+            if(full){
+              const appUrl=process.env.NEXT_PUBLIC_APP_URL||'';
+              await sendEmail(full.email,`Payment confirmed — ${full.reference}`,paymentConfirmedEmailHtml({reference:full.reference,total:full.total,address:full.address,phone:full.phone,items:full.items.map(i=>({quantity:i.quantity,price:i.price,product:{name:i.product.name}}))},`${appUrl}/track?ref=${full.reference}`));
+            }
+          }catch(e){console.error('[paystack webhook] confirmation email failed:',e);}
+        }
       }
     }
     return NextResponse.json({received:true});
