@@ -39,7 +39,7 @@ export async function POST(request:Request){const ip=request.headers.get('x-forw
         await sendEmail(
           customer.email,
           `Order received — ${order.reference}`,
-          orderConfirmationEmailHtml({ reference: order.reference, total, address: customer.address, phone: customer.phone, items: normalized.map(({product,quantity}) => ({ quantity, price: product.price, product: { name: product.name } })) }, `${appUrl}/track?ref=${order.reference}`)
+          orderConfirmationEmailHtml({ reference: order.reference, total, address: customer.address, phone: customer.phone, items: normalized.map(({product,quantity}) => ({ quantity, price: Number(product.price), product: { name: product.name } })) }, `${appUrl}/track?ref=${order.reference}`)
         );
       } catch (e) { console.error('[orders] confirmation email failed:', e); }
 
