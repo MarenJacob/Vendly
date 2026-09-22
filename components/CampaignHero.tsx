@@ -37,14 +37,14 @@ export default function CampaignHero({ campaigns }: { campaigns: Campaign[] }) {
       <div className="relative z-10 hidden aspect-square md:block">
         <div className="absolute inset-0 grid grid-cols-2 gap-3">
           {c.images.slice(0, 4).map((src, i) => (
-            <div key={src + i} className={`relative overflow-hidden rounded-2xl bg-[rgba(255,255,255,0.05)] shadow-[0_20px_60px_rgba(0,0,0,.35)] ${i === 0 ? 'row-span-2' : ''}`}>
-              <Image src={src} alt="" fill sizes="240px" className="object-cover" />
+            <div key={src + i} className={`relative overflow-hidden rounded-2xl bg-[rgba(255,255,255,0.92)] shadow-[0_20px_60px_rgba(0,0,0,.35)] ${i === 0 ? 'row-span-2' : ''}`}>
+              <Image src={src} alt="" fill sizes="240px" className="object-contain p-4" />
             </div>
           ))}
         </div>
       </div>
-      <div className="relative z-10 aspect-[4/3] overflow-hidden rounded-2xl bg-[rgba(255,255,255,0.05)] md:hidden">
-        {c.images[0] && <Image src={c.images[0]} alt="" fill sizes="100vw" className="object-cover" />}
+      <div className="relative z-10 aspect-[4/3] overflow-hidden rounded-2xl bg-[rgba(255,255,255,0.92)] md:hidden">
+        {c.images[0] && <Image src={c.images[0]} alt="" fill sizes="100vw" className="object-contain p-6" />}
       </div>
     </div>
   );
