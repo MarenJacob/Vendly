@@ -1,0 +1,1 @@
+import { NextResponse } from 'next/server'; import { COOKIE } from '@/lib/customer-auth'; export async function POST(){const r=NextResponse.json({ok:true});r.cookies.set(COOKIE,'',{httpOnly:true,expires:new Date(0),path:'/'});return r;}

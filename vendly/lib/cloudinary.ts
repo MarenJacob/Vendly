@@ -1,0 +1,1 @@
+import { createHash } from 'node:crypto'; export function cloudinarySignature(params:Record<string,string|number>, apiSecret:string){const body=Object.entries(params).filter(([,v])=>v!==undefined&&v!==null&&v!=='').sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>`${k}=${v}`).join('&');return createHash('sha1').update(body+apiSecret).digest('hex');}

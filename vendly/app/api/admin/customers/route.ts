@@ -1,0 +1,2 @@
+import { NextResponse } from 'next/server'; import { getAdminSession } from '@/lib/admin-auth'; import { prisma } from '@/lib/prisma';
+export async function GET(){if(!await getAdminSession())return NextResponse.json({error:'Unauthorized'},{status:401});try{const customers=await prisma.user.findMany({where:{role:'CUSTOMER'},orderBy:{createdAt:'desc'},include:{_count:{select:{orders:true,messages:true}}}});return NextResponse.json({customers})}catch{return NextResponse.json({customers:[]})}}

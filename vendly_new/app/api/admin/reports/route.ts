@@ -1,0 +1,4 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { getAdminSession } from '@/lib/admin-auth';
+export async function GET(){if(!await getAdminSession())return NextResponse.json({error:'Unauthorized'},{status:401});try{const [orders,products,customers,messages]=await Promise.all([prisma.order.count(),prisma.product.count(),prisma.user.count({where:{role:'CUSTOMER'}}),prisma.message.count()]);const paid=await prisma.order.aggregate({where:{status:{in:['PAID','PROCESSING','SHIPPED','DELIVERED']}},_sum:{total:true}});const low=await prisma.product.findMany({where:{stock:{lte:5}},select:{id:true,name:true,stock:true},orderBy:{stock:'asc'},take:8});return NextResponse.json({orders,products,customers,messages,revenue:Number(paid._sum.total||0),lowStock:low});}catch{return NextResponse.json({error:'Could not generate report.'},{status:500});}}
