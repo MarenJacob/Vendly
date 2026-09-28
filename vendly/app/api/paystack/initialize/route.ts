@@ -1,3 +1,4 @@
+import { getAppUrl } from '@/lib/app-url';
 import { NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
 import { prisma } from '@/lib/prisma';
@@ -14,7 +15,7 @@ export async function POST(request: Request) {const ip=request.headers.get('x-fo
     if(!order||order.email!==email) return NextResponse.json({error:'Order could not be verified.'},{status:404});
     if(order.status==='PAID') return NextResponse.json({error:'This order is already paid.'},{status:409});
     const amount=Math.round(Number(order.total)*100);
-    const callback=`${process.env.NEXT_PUBLIC_APP_URL||'http://localhost:3000'}/checkout/verify`;
+    const callback=`${getAppUrl(request)||'http://localhost:3000'}/checkout/verify`;
     const response=await fetch('https://api.paystack.co/transaction/initialize',{method:'POST',headers:{Authorization:`Bearer ${secret}`,'Content-Type':'application/json'},body:JSON.stringify({email,amount,currency:'NGN',callback_url:callback,metadata:{orderReference}}),cache:'no-store'});
     const data=await response.json();
     if(!response.ok||!data.status) return NextResponse.json({error:data.message||'Paystack could not initialize the transaction.'},{status:502});

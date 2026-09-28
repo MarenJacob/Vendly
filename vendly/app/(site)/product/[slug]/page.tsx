@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, MessageCircle, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
-import { getProductBySlug } from '@/lib/catalog';
+import { ArrowLeft, ArrowUpRight, MessageCircle, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { getProductBySlug, countSimilarProducts } from '@/lib/catalog';
 import { formatNaira } from '@/lib/products';
 import AddToCart from '@/components/AddToCart';
+import BuyNow from '@/components/BuyNow';
 import ProductGallery from '@/components/ProductGallery';
 import WishlistButton from '@/components/WishlistButton';
 import TrackProductView from '@/components/TrackProductView';
@@ -15,6 +16,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const product = await getProductBySlug(slug);
   if (!product) return notFound();
   const p = product;
+  const similarCount = await countSimilarProducts(p.category, p.id).catch(() => 0);
+  const outOfStock = !p.isPreorder && (p.stock ?? 1) <= 0;
   return (
     <div className="container overflow-x-hidden py-8 md:py-12">
       <TrackProductView product={p} />
@@ -40,6 +43,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           ) : (p.stock ?? 1) <= 0 ? (
             <div className="mt-4 rounded-2xl bg-[rgba(0,0,0,0.05)] px-4 py-3 text-xs font-semibold text-[rgba(0,0,0,0.5)]">Currently out of stock</div>
+          ) : (p.stock ?? 99) <= 2 ? (
+            <div className="mt-4 flex items-center gap-2 rounded-2xl bg-[#FFF3EF] px-4 py-3 text-xs font-bold text-[#FF3D32]">
+              <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-[#FF3D32]" />
+              Limited stock — only {p.stock} left. Order now.
+            </div>
           ) : null}
           <p className="mt-6 break-words text-sm leading-7 text-[rgba(0,0,0,0.55)]">{p.description}</p>
           {p.sizes && (
@@ -51,8 +59,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           )}
           <div className="mt-8">
-            <AddToCart productId={p.id} isPreorder={p.isPreorder} outOfStock={!p.isPreorder && (p.stock ?? 1) <= 0} />
+            <AddToCart productId={p.id} isPreorder={p.isPreorder} outOfStock={outOfStock} />
+            <BuyNow productId={p.id} outOfStock={outOfStock} />
             <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Vendly, I'm interested in ${p.name}. Is it available?`)}`} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-[rgba(0,0,0,0.15)] py-4 text-sm font-bold"><MessageCircle size={17} /> Message Vendly</a>
+            {similarCount > 0 && (
+              <Link href={`/category/${encodeURIComponent(p.category)}`} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-bold text-[rgba(0,0,0,0.6)] transition hover:bg-[#F7F8FA]">See similar products <ArrowUpRight size={16} /></Link>
+            )}
           </div>
           <div className="mt-9 grid gap-3 border-t border-[rgba(0,0,0,0.1)] pt-6 text-xs text-[rgba(0,0,0,0.55)]">
             <div className="flex items-center gap-3"><ShieldCheck size={16} /> Secure checkout with Paystack</div>

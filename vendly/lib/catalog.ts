@@ -85,3 +85,11 @@ export async function getCategoryNames(): Promise<string[]> {
   const rows = await withRetry(() => prisma.category.findMany({ orderBy: { name: 'asc' } }));
   return ['All', ...rows.map((c) => c.name)];
 }
+
+// Number of other products in the same category — used to decide whether to
+// show a "See similar products" call to action on a product page.
+export async function countSimilarProducts(categoryName: string, excludeProductId: string): Promise<number> {
+  return withRetry(() =>
+    prisma.product.count({ where: { id: { not: excludeProductId }, category: { name: categoryName } } }),
+  );
+}

@@ -109,6 +109,16 @@ export function orderStatusEmailHtml(order: EmailOrder, status: string, trackUrl
   `);
 }
 
+export function lowStockAdminEmailHtml(items: { name: string; stock: number }[]) {
+  return emailShell(`
+    <h2 style="color:#061426;margin:0 0 8px">Low stock alert ⚠️</h2>
+    <p style="color:#161616;font-size:14px;line-height:1.6;margin:0 0 16px">The following products are running low and may need restocking soon:</p>
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;color:#161616">
+      ${items.map((i) => `<tr style="border-bottom:1px solid #F0F0F0"><td style="padding:8px 0">${escapeHtml(i.name)}</td><td style="padding:8px 0;text-align:right;font-weight:700;color:${i.stock <= 0 ? '#F50063' : '#FF3D32'}">${i.stock} left</td></tr>`).join('')}
+    </table>
+  `);
+}
+
 export function supportMessageAdminEmailHtml(message: { name: string; phone: string; email?: string | null; message: string; productName?: string }) {
   return emailShell(`
     <h2 style="color:#061426;margin:0 0 8px">New customer message</h2>

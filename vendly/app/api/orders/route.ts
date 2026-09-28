@@ -1,9 +1,10 @@
+import { getAppUrl } from '@/lib/app-url';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { products } from '@/lib/products';
 import { rateLimit } from '@/lib/rate-limit';
 import { getCustomer } from '@/lib/customer-auth';
-import { sendEmail, orderConfirmationEmailHtml } from '@/lib/email';
+import { sendEmail, orderConfirmationEmailHtml, lowStockAdminEmailHtml } from '@/lib/email';
 
 function reference(){return `VD-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;}
 
@@ -35,13 +36,22 @@ export async function POST(request:Request){const ip=request.headers.get('x-forw
         return created;
       });
       try {
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+        const appUrl = getAppUrl(request);
         await sendEmail(
           customer.email,
           `Order received — ${order.reference}`,
           orderConfirmationEmailHtml({ reference: order.reference, total, address: customer.address, phone: customer.phone, items: normalized.map(({product,quantity}) => ({ quantity, price: Number(product.price), product: { name: product.name } })) }, `${appUrl}/track?ref=${order.reference}`)
         );
       } catch (e) { console.error('[orders] confirmation email failed:', e); }
+
+      try {
+        const LOW_STOCK_THRESHOLD = 2;
+        const justCrossed = normalized.filter(({product,quantity}) => !product.isPreorder && product.stock > LOW_STOCK_THRESHOLD && (product.stock - quantity) <= LOW_STOCK_THRESHOLD);
+        const adminInbox = process.env.GMAIL_USER;
+        if (justCrossed.length && adminInbox) {
+          await sendEmail(adminInbox, `Low stock alert — ${justCrossed.length} product${justCrossed.length > 1 ? 's' : ''}`, lowStockAdminEmailHtml(justCrossed.map(({product,quantity}) => ({ name: product.name, stock: product.stock - quantity }))));
+        }
+      } catch (e) { console.error('[orders] low-stock alert failed:', e); }
 
       return NextResponse.json({reference:order.reference,orderId:order.id,total},{status:201});
     }
