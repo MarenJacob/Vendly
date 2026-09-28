@@ -1,3 +1,4 @@
+import { getAppUrl } from '@/lib/app-url';
 import {NextResponse} from 'next/server';
 import {prisma} from '@/lib/prisma';
 import {getAdminSession} from '@/lib/admin-auth';
@@ -10,7 +11,7 @@ if(['PROCESSING','SHIPPED','DELIVERED','CANCELLED'].includes(next)){
   try{
     const full=await prisma.order.findUnique({where:{id},include:{items:{include:{product:true}}}});
     if(full){
-      const appUrl=process.env.NEXT_PUBLIC_APP_URL||'';
+      const appUrl=getAppUrl(req);
       await sendEmail(full.email,`Order update — ${full.reference}`,orderStatusEmailHtml({reference:full.reference,total:Number(full.total),address:full.address,phone:full.phone,items:full.items.map(i=>({quantity:i.quantity,price:Number(i.price),product:{name:i.product.name}}))},next,`${appUrl}/track?ref=${full.reference}`));
     }
   }catch(e){console.error('[admin/orders] status email failed:',e);}

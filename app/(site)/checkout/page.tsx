@@ -111,7 +111,12 @@ export default function Checkout() {
           <h2 className="font-semibold">Order summary</h2>
           <div className="mt-6 divide-y divide-slate-100">
             {rows.map(({ item, product: p }) => (
-              <div key={p!.id} className="flex justify-between gap-4 py-4 text-sm"><span>{p!.name}<span className="text-slate-400">×{item.quantity}</span></span><strong>{formatNaira(p!.price * item.quantity)}</strong></div>
+              <div key={p!.id} className="py-4 text-sm">
+                <div className="flex justify-between gap-4"><span>{p!.name}<span className="text-slate-400"> ×{item.quantity}</span></span><strong>{formatNaira(p!.price * item.quantity)}</strong></div>
+                {!p!.isPreorder && (p!.stock ?? 99) > 0 && (p!.stock ?? 99) <= 2 && (
+                  <p className="mt-1.5 flex items-center gap-1.5 text-xs font-bold text-[#FF3D32]"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#FF3D32]" />Limited stock — only {p!.stock} left. Order now.</p>
+                )}
+              </div>
             ))}
           </div>
           <div className="mt-5 flex justify-between border-t border-slate-200 pt-5"><span className="font-medium">Total</span><strong>{formatNaira(total)}</strong></div>

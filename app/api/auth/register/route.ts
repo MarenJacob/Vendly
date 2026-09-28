@@ -1,3 +1,4 @@
+import { getAppUrl } from '@/lib/app-url';
 import { NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
 import { prisma } from '@/lib/prisma';
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
     const user = await prisma.user.create({ data: { name, email, phone: phone || null, passwordHash: hashPassword(password) } });
     try {
       const token = await issueVerificationToken(user.id);
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+      const appUrl = getAppUrl(req);
       await sendEmail(email, 'Verify your Vendly account', verificationEmailHtml(name, `${appUrl}/account/verify?token=${token}`));
     } catch (e) {
       console.error('[register] Verification email step failed:', e);
