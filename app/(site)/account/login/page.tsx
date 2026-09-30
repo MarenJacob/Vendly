@@ -4,6 +4,7 @@ import { FormEvent, Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Turnstile from '@/components/Turnstile';
 import GoogleSignIn from '@/components/GoogleSignIn';
+import PasswordInput from '@/components/PasswordInput';
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -36,7 +37,8 @@ function LoginForm() {
         <h1 className="mt-4 text-5xl font-bold tracking-[-.07em]">Welcome back.</h1>
         <form onSubmit={submit} className="mt-8 grid gap-3">
           <input name="email" type="email" placeholder="Email address" className="input" required />
-          <input name="password" type="password" minLength={8} placeholder="Password" className="input" required />
+          <PasswordInput name="password" minLength={8} placeholder="Password" required />
+          <div className="-mt-1 text-right"><Link href="/account/forgot-password" className="text-xs font-semibold text-[rgba(0,0,0,0.5)] underline underline-offset-4 hover:text-black">Forgot password?</Link></div>
           {needsTurnstile && <Turnstile onToken={setTurnstileToken} />}
           <button disabled={busy} className="btn-primary mt-2 justify-center">{busy ? 'Please wait…' : 'Continue'}</button>
           {error && <p className="rounded-2xl bg-red-50 p-4 text-sm text-red-700">{error}</p>}

@@ -29,6 +29,15 @@ export async function sendEmail(to: string, subject: string, html: string, reply
   }
 }
 
+export function resetPasswordEmailHtml(name: string, resetUrl: string) {
+  return emailShell(`
+    <h2 style="color:#061426;margin:0 0 14px">Reset your password</h2>
+    <p style="color:#161616;font-size:14px;line-height:1.6;margin:0 0 20px">Hi ${escapeHtml(name) || 'there'}, we received a request to reset your Vendly password. This link expires in 1 hour.</p>
+    ${button('Reset my password', resetUrl)}
+    <p style="color:#8A8F98;font-size:12px;margin-top:24px">If you didn't request this, you can safely ignore this email — your password won't change.</p>
+  `);
+}
+
 export function verificationEmailHtml(name: string, verifyUrl: string) {
   return emailShell(`
     <h2 style="color:#061426;margin:0 0 14px">Welcome to Vendly, ${escapeHtml(name) || 'there'}.</h2>

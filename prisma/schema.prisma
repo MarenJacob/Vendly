@@ -33,6 +33,8 @@ model User {
   emailVerifiedAt DateTime?
   verifyToken     String?   @unique
   verifyExpiresAt DateTime?
+  resetToken      String?   @unique
+  resetExpiresAt  DateTime?
   orders          Order[]
   messages        Message[]
   createdAt       DateTime  @default(now())

@@ -4,6 +4,7 @@ import { FormEvent, Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Turnstile from '@/components/Turnstile';
 import GoogleSignIn from '@/components/GoogleSignIn';
+import PasswordInput from '@/components/PasswordInput';
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -33,7 +34,7 @@ function RegisterForm() {
           <input name="name" placeholder="Full name" className="input" required />
           <input name="phone" placeholder="Phone number (optional)" className="input" />
           <input name="email" type="email" placeholder="Email address" className="input" required />
-          <input name="password" type="password" minLength={8} placeholder="Password" className="input" required />
+          <PasswordInput name="password" minLength={8} placeholder="Password" required />
           <Turnstile onToken={setTurnstileToken} />
           <label className="mt-1 flex items-start gap-2.5 text-xs leading-5 text-[rgba(0,0,0,0.6)]">
             <input type="checkbox" required checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5" />
